@@ -10,10 +10,11 @@ let sc;
 function setup() {
 	createCanvas(windowWidth, windowHeight);
 	rectMode(CENTER);
-	sc = new SugarScape(6, 15, 2);
+	sc = new SugarScape(10, 15, 2);
 }
 
 function draw() {
 	background(0);
+	if(frameCount % 10 == 0)sc.update();
 	sc.show();
 }

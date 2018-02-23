@@ -65,6 +65,7 @@ class SugarScape {
                     if (Math.random() > 0.5 && result[x][y] === null) {
                         result[x][y] = new Agent(x, y);
                         num -= 1;
+                        // console.log(num);
                     }
                 }
             }
@@ -82,9 +83,36 @@ class SugarScape {
         }
         for (let y = 0; y < this.rows; y++) {
             for (let x = 0; x < this.cols; x++) {
-                if(this.agents[x][y] != null)this.agents[x][y].show(this.r)
+                if (this.agents[x][y] != null) this.agents[x][y].show(this.r)
             }
         }
+    }
+    update() {
+        for (let y = 0; y < this.rows; y++) {
+            for (let x = 0; x < this.cols; x++) {
+                this.sugarFields[x][y].growSugar();
+                let agent = this.agents[x][y];
+                if (agent != null) agent.move(this);
+                if (agent != null && (agent.wealth < 1 || agent.age > agent.MA)) {
+                    this.agents[x].splice(y, 1, null);
+                    this.addAgent();
+                }
+            }
+        }
+    }
+    /**
+     * adds an agent at a random position
+    */
+    addAgent() {
+        let emptySpots = [];
+        for (let y = 0; y < this.rows; y++) {
+            for (let x = 0; x < this.cols; x++) {
+                if (this.agents[x][y] === null)emptySpots.push(createVector(x, y));
+            }
+        }
+        // console.log(emptySpots);
+        let spot = random(emptySpots);
+        this.agents[spot.x][spot.y] = new Agent(spot.x, spot.y);
     }
     /**
      * sets the resolution of the grid to a specific value

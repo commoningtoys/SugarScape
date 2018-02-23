@@ -10,9 +10,10 @@ class Agent {
     constructor(x, y, vision, metabolicRate, maxAge) {
         this.x = x;
         this.y = y;
-        this.v = vision || floor(random(1, 7));
+        this.v = vision || floor(random(1, 4));
         this.MR = metabolicRate || floor(random(1, 5));
         this.MA = maxAge || floor(random(60, 101));
+        this.age = 0;
         this.wealth = floor(random(5, 26));
     }
     /**
@@ -37,6 +38,10 @@ class Agent {
             }
         }
     }
+    /**
+     * Move the agent to the nearest sugar field with the greatest sugar amount
+     * @param {SugarScape} sugarScape SugarScape Object
+     */
     move(sugarScape) {
         //search the empty spots
         let emptySpots = [];
@@ -45,20 +50,50 @@ class Agent {
             let posX = (i + this.x + sugarScape.cols) % sugarScape.cols;
             let posY = (i + this.y + sugarScape.rows) % sugarScape.rows;
             //we find the empty spots in the agent grid
-            if (sugarScape.agents[posX][posY] === null) emptySpots.push(createVector(posX, posY));
+            if (sugarScape.agents[posX][posY] == null) emptySpots.push(createVector(posX, posY));
         }
         //search the sugarfields with the highest amout of sugar
-        let max = 0;
+        let max = -1;
         let sugarSpots = [];
-        for(let spot of emptySpots){
-            let sugarAmount = sugarScape.sugarFields[spot.x][spot.y].sugarAmount
-            if(sugarAmount >= max){
+        for (let spot of emptySpots) {
+            let sugarAmount = sugarScape.sugarFields[spot.x][spot.y].sugarAmount;
+            if (sugarAmount >= max) {
                 max = sugarAmount;
-                sugarSpots.push(createVector(spot.x, spot.y));
+                // sugarSpots.push(createVector(spot.x, spot.y));
             }
         }
-
+        for (let spot of emptySpots) {
+            let sugarAmount = sugarScape.sugarFields[spot.x][spot.y].sugarAmount;
+            if (sugarAmount >= max) sugarSpots.push(createVector(spot.x, spot.y));
+        }
+        // console.log([sugarSpots, max]);
+        //search the nearest sugar field
+        let min = 9999999;
+        let nearestSpot;
+        let nearestSpots = [];
+        for (let spot of sugarSpots) {
+            let pos = createVector(this.x, this.y);
+            let d = p5.Vector.dist(pos, spot);
+            //get the nearest sugarfield
+            if (d <= min) {
+                min = d;
+            }
+        }
+        for (let spot of sugarSpots) {
+            let pos = createVector(this.x, this.y);
+            let d = p5.Vector.dist(pos, spot);
+            //push the position in a vector array
+            if (d <= min)nearestSpots.push(createVector(spot.x, spot.y));
+        }
+        //if there is more than one position get a random position
+        if (nearestSpots.length > 1) nearestSpot = random(nearestSpots);
+        else nearestSpot = createVector(this.x, this.y);
+        this.x = nearestSpot.x;
+        this.y = nearestSpot.y;
+        this.wealth += sugarScape.sugarFields[nearestSpot.x][nearestSpot.y].sugarAmount;
+        sugarScape.sugarFields[nearestSpot.x][nearestSpot.y].sugarAmount = 0;
         this.wealth -= this.MR;
+        this.age++;
     }
 }
 

@@ -15,7 +15,7 @@ class SugarField {
      * increases the amount of sugar in the field
     */
     growSugar() {
-        if (this.sugarAmount < this.mc) this.sugarAmount++;
+        if (this.sugarAmount < this.mc && this.mc > 0) this.sugarAmount++;
     }
     /**
      * displays the sugarfields as ellipses with radius indicating the maxCapacity
