@@ -1,9 +1,13 @@
 class SugarField {
     /**
      * SugarField object that keeps track of the sugar amount
+     * @param {int} x position on x axis
+     * @param {int} y position on y axis 
      * @param {int} maxCapacity maximum amount of sugar that grows in this field 
      */
-    constructor(maxCapacity) {
+    constructor(x, y, maxCapacity) {
+        this.x = x;
+        this.y = y;
         this.mc = maxCapacity;
         this.sugarAmount = maxCapacity;
     }
@@ -20,10 +24,11 @@ class SugarField {
      * @param {int} y position on y axis
      * @param {int} r size of sugar field
      */
-    show(x, y, r) {
-        r *= map(this.mc, 0, maxSugarCapacity, 0.4, 1);
+    show(r) {
+        let Size = r * map(this.mc, 0, maxSugarCapacity, 0.4, 1);
         stroke(255, 0, 0);
+        noStroke();
         fill(255, 255, 0, 255 * (this.sugarAmount / this.mc));
-        ellipse(x, y, r);
+        if(this.mc > 0)ellipse(leftGutter + this.x * r, topGutter + this.y * r, Size);
     }
 }
