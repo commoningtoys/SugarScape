@@ -20,8 +20,6 @@ class SugarField {
     /**
      * displays the sugarfields as ellipses with radius indicating the maxCapacity
      * and the alpha channel displaying the sugar amount in it
-     * @param {int} x position on x axis
-     * @param {int} y position on y axis
      * @param {int} r size of sugar field
      */
     show(r) {

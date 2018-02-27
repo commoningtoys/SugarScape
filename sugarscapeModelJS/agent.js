@@ -20,23 +20,32 @@ class Agent {
      * show the agent
      * @param {int} r size of agent
      */
-    show(r) {
+    show(x, y, r) {
         // stroke(255);
         noStroke();
         fill(255, 0, 255, 150);
-        rect(leftGutter + this.x * r, topGutter + this.y * r, r * 0.75, r * 0.75);
+        rect(leftGutter + x * r, topGutter + y * r, r * 0.75, r * 0.75);
         //if mouse over show the agent vision
         //add also agent infos maxAge whealt etc.
-        if (dist(mouseX, mouseY, leftGutter + this.x * r, topGutter + this.y * r) < 5) {
+        if (dist(mouseX, mouseY, leftGutter + x * r, topGutter + y * r) < 5) {
             fill(0, 200, 255, 150);
             for (let i = - this.v; i <= this.v; i++) {
                 //wrap around with modulo
-                let posX = (i + this.x + cols) % cols;
-                rect(leftGutter + posX * r, topGutter + this.y * r, r * 0.65, r * 0.65);
-                let posY = (i + this.y + rows) % rows;
-                rect(leftGutter + this.x * r, topGutter + posY * r, r * 0.65, r * 0.65);
+                let posX = (i + x + cols) % cols;
+                rect(leftGutter + posX * r, topGutter + y * r, r * 0.65, r * 0.65);
+                let posY = (i + y + rows) % rows;
+                rect(leftGutter + x * r, topGutter + posY * r, r * 0.65, r * 0.65);
             }
         }
+    }
+    /**
+     * 
+     * @param {int} val Sugar amount to be added to the total wealth
+     */
+    update(val){
+        this.wealth += val;
+        this.wealth -= this.MR;
+        this.age++;
     }
     /**
      * Move the agent to the nearest sugar field with the greatest sugar amount
