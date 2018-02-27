@@ -15,7 +15,8 @@ function setup() {
 
 function draw() {
 	background(0);
-	if (frameCount % 10 == 0) {
+	// sc.show();
+	if (frameCount % 30 == 0) {
 		//we update the sugarscape according to the paper
 		sc.grow();//grow the sugar
 		sc.move();//move the agent

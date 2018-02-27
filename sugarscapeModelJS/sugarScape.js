@@ -1,3 +1,12 @@
+/**
+ * Debugging function to draw movement lines
+ * @param {p5.Vector} v1 
+ * @param {p5.Vector} v2 
+ */
+function Debug(v1, v2) {
+    this.v1 = v1;
+    this.v2 = v2;
+}
 class SugarScape {
     constructor(numAgents, resolution, numCenters) {
         this.rows = rows;//we can make them change later
@@ -11,6 +20,8 @@ class SugarScape {
         this.agents = [];
         this.agents = this.fillGridWithAgents(numAgents);
         this.initSugarFields();
+        //DEBUG//
+        this.debug = [];
     }
     /** 
      * initializes the model by setting the 
@@ -88,6 +99,15 @@ class SugarScape {
                 if (this.agents[x][y] != null) this.agents[x][y].show(x, y, this.r)
             }
         }
+        for (let d of this.debug) {
+            noStroke();
+            fill(255, 0, 0);
+            ellipse(d.v1.x, d.v1.y, 5);
+            fill(0, 0, 255);
+            ellipse(d.v2.x, d.v2.y, 5);
+            stroke(0, 255, 0);
+            line(d.v1.x, d.v1.y, d.v2.x, d.v2.y);
+        }
     }
     grow() {
         for (let y = 0; y < this.rows; y++) {
@@ -104,6 +124,7 @@ class SugarScape {
      * @param {SugarScape} sugarScape SugarScape Object
      */
     move() {
+        this.debug = [];
         //////////////////////////
         //search the empty spots//
         //////////////////////////
@@ -115,9 +136,10 @@ class SugarScape {
                     for (let i = - agent.v; i <= agent.v; i++) {
                         //wrap around with modulo
                         let posX = (i + x + this.cols) % this.cols;
+                        if (this.agents[posX][y] == null) emptySpots.push(createVector(posX, y));
                         let posY = (i + y + this.rows) % this.rows;
                         //we find the empty spots in the agent grid
-                        if (this.agents[posX][posY] == null) emptySpots.push(createVector(posX, posY));
+                        if (this.agents[x][posY] == null) emptySpots.push(createVector(x, posY));
                     }
                     //////////////////////////////////////////////////////////
                     //search the sugarfields with the highest amout of sugar//
@@ -157,20 +179,22 @@ class SugarScape {
                     }
                     //if there is more than one position get a random position
                     if (nearestSpots.length > 0) nearestSpot = random(nearestSpots);
-                    else nearestSpot = createVector(x, y);
-                    ////////////////////////////////////
-                    //change the position of the agent//
-                    ////////////////////////////////////
-                    // this.x = nearestSpot.x;
-                    // this.y = nearestSpot.y;
-                    agent.update(this.sugarFields[nearestSpot.x][nearestSpot.y].sugarAmount);
-                    // agent.wealth += this.sugarFields[nearestSpot.x][nearestSpot.y].sugarAmount;
-                    this.sugarFields[nearestSpot.x][nearestSpot.y].sugarAmount = 0;
+                    else {
+                        agent.update();
+                        return;
+                    }
                     /////////////////////////////////////////////////////////////////////////
                     //change the position of the agent to spot with the big amount of sugar//
                     /////////////////////////////////////////////////////////////////////////
+                    this.debug.push(new Debug(createVector(x * this.r, y * this.r), createVector(nearestSpot.x * this.r, nearestSpot.y * this.r)));
+                    // stroke(0, 255, 0);
+                    // line(x * this.r, y * this.r, nearestSpot.x * this.r, nearestSpot.y * this.r);
                     this.agents[nearestSpot.x][nearestSpot.y] = agent;
                     this.agents[x][y] = null;
+                    agent.update(this.sugarFields[nearestSpot.x][nearestSpot.y].sugarAmount);
+                    // agent.wealth += this.sugarFields[nearestSpot.x][nearestSpot.y].sugarAmount;
+                    this.sugarFields[nearestSpot.x][nearestSpot.y].sugarAmount = 0;
+
                 }
             }
         }

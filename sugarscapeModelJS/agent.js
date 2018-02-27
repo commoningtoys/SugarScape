@@ -43,7 +43,7 @@ class Agent {
      * @param {int} val Sugar amount to be added to the total wealth
      */
     update(val){
-        this.wealth += val;
+        this.wealth += val || 0;
         this.wealth -= this.MR;
         this.age++;
     }
