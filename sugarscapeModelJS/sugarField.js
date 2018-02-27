@@ -5,9 +5,9 @@ class SugarField {
      * @param {int} y position on y axis 
      * @param {int} maxCapacity maximum amount of sugar that grows in this field 
      */
-    constructor(x, y, maxCapacity) {
-        this.x = x;
-        this.y = y;
+    constructor(maxCapacity) {
+        // this.x = x;
+        // this.y = y;
         this.mc = maxCapacity;
         this.sugarAmount = maxCapacity;
     }
@@ -22,11 +22,11 @@ class SugarField {
      * and the alpha channel displaying the sugar amount in it
      * @param {int} r size of sugar field
      */
-    show(r) {
+    show(x, y, r) {
         let Size = r * map(this.mc, 0, maxSugarCapacity, 0.4, 1);
         stroke(255, 0, 0);
         noStroke();
         fill(255, 255, 0, 255 * (this.sugarAmount / this.mc));
-        if(this.mc > 0)ellipse(leftGutter + this.x * r, topGutter + this.y * r, Size);
+        if(this.mc > 0)ellipse(leftGutter + x * r, topGutter + y * r, Size);
     }
 }
