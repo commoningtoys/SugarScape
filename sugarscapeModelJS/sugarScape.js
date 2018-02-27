@@ -6,17 +6,17 @@ class SugarScape {
         this.sugarFields = [];
         this.r = resolution;
         this.fieldCenters = this.setFieldCenters(numCenters);
-        this.fieldRadius = 10;
+        this.fieldRadius = 4;
         ///////AGENTS////////////
         this.agents = [];
         this.agents = this.fillGridWithAgents(numAgents);
-        this.init();
+        this.initSugarFields();
     }
     /** 
      * initializes the model by setting the 
      * sugarfields in the grid
     */
-    init() {
+    initSugarFields() {
         for (let x = 0; x < this.cols; x++) {
             this.sugarFields[x] = [];
             for (let y = 0; y < this.rows; y++) {
@@ -50,6 +50,7 @@ class SugarScape {
     /**
      * 
      * @param {int} num number of agents to be set in the grid
+     * @returns 2D Array of agents
      */
     fillGridWithAgents(num) {
         let result = [];
@@ -59,15 +60,16 @@ class SugarScape {
                 result[x][y] = null;
             }
         }
-        while (num > 0) {
-            for (let x = 0; x < this.cols; x++) {
-                for (let y = 0; y < this.rows; y++) {
-                    if (Math.random() > 0.5 && result[x][y] === null) {
-                        result[x][y] = new Agent(x, y);
-                        num -= 1;
-                        // console.log(num);
-                    }
-                }
+        let count = 0;
+        //fill the array with agents
+        while (count < num) {
+            let x = Math.floor(Math.random() * cols);
+            let y = Math.floor(Math.random() * rows);            
+            if (result[x][y] === null) {
+                result[x][y] = new Agent(x, y);
+                count++;
+                // if (num <= 0) break;
+                console.log(num);
             }
         }
         return result;
@@ -107,7 +109,7 @@ class SugarScape {
         let emptySpots = [];
         for (let y = 0; y < this.rows; y++) {
             for (let x = 0; x < this.cols; x++) {
-                if (this.agents[x][y] === null)emptySpots.push(createVector(x, y));
+                if (this.agents[x][y] === null) emptySpots.push(createVector(x, y));
             }
         }
         // console.log(emptySpots);
