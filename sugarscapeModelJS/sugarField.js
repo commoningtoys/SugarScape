@@ -29,9 +29,6 @@ class SugarField {
         fill(255, 255, 0, 255 * (this.sugarAmount / this.mc));
         if (this.mc > 0) {
             ellipse(x * r, y * r, Size);
-            fill(0);
-            text(this.mc, x * r + r/2, y * r + r/2);
-            // text(this.sugarAmount, (x * r) - r / 3, (y * r) + r / 3);
         }
     }
 }

@@ -2,16 +2,22 @@
 ////////////global variables///////////
 ///////////////////////////////////////
 const maxSugarCapacity = 4;
-const rows = cols = 10;
-const leftGutter = 50, topGutter = 20;
+const ROWS = COLS = 50;
+const GUTTER = 20;
 ///////////////////////////////////////
 ///////////////////////////////////////
-let sc, cnv;
+let sc, cnv, debug = false;
 function setup() {
+	let cnvDiv = document.getElementById('myContainer');
 	cnv = createCanvas(800, 800);
-	cnv.parent('myCanvas')
-	ellipseMode(CORNER);
-	sc = new SugarScape(20, 25, 2);
+	cnv.parent('myCanvas');
+
+	console.log(cnvDiv.offsetWidth);
+	let w = cnvDiv.offsetWidth;
+	let h = cnvDiv.offsetHeight;
+	
+	rectMode(CENTER);
+	sc = new SugarScape(250, 15, 2);
 }
 
 
@@ -30,5 +36,7 @@ function draw() {
 	// 	sc.move();//move the agent
 	// 	sc.replace();//replace dead agents
 	// }
+	translate(GUTTER, GUTTER);
 	sc.show();
+	if(debug)sc.displayDebug();
 }
