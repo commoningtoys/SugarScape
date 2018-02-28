@@ -88,9 +88,9 @@ class SugarScape {
     show() {
         for (let x = 0; x < COLS; x++) {
             for (let y = 0; y < ROWS; y++) {
-                noFill();
-                stroke(255);
-                rect(x * this.r, y * this.r, this.r, this.r)
+                // noFill();
+                // stroke(255);
+                // rect(x * this.r, y * this.r, this.r, this.r)
                 this.sugarFields[x][y].show(x, y, this.r);
             }
         }
