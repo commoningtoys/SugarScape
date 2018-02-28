@@ -2,15 +2,16 @@
 ////////////global variables///////////
 ///////////////////////////////////////
 const maxSugarCapacity = 4;
-const rows = cols = 7;
+const rows = cols = 10;
 const leftGutter = 50, topGutter = 20;
 ///////////////////////////////////////
 ///////////////////////////////////////
-let sc;
+let sc, cnv;
 function setup() {
-	createCanvas(800, 800);
-	rectMode(CENTER);
-	sc = new SugarScape(10, 15, 2);
+	cnv = createCanvas(800, 800);
+	cnv.parent('myCanvas')
+	ellipseMode(CORNER);
+	sc = new SugarScape(20, 25, 2);
 }
 
 

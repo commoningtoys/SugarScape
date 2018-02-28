@@ -15,7 +15,7 @@ class SugarScape {
         this.sugarFields = [];
         this.r = resolution;
         this.fieldCenters = this.setFieldCenters(numCenters);
-        this.fieldRadius = 10;
+        this.fieldRadius = 2.5;
         ///////AGENTS////////////
         this.agents = [];
         this.agents = this.fillGridWithAgents(numAgents);
@@ -91,12 +91,15 @@ class SugarScape {
     show() {
         for (let x = 0; x < this.cols; x++) {
             for (let y = 0; y < this.rows; y++) {
+                noFill();
+                stroke(255);
+                rect(x * this.r, y * this.r, this.r, this.r)
                 this.sugarFields[x][y].show(x, y, this.r);
             }
         }
         for (let x = 0; x < this.cols; x++) {
             for (let y = 0; y < this.rows; y++) {
-                if (this.agents[x][y] != null) this.agents[x][y].show(x, y, this.r)
+                if (this.agents[x][y] !== null) this.agents[x][y].show(x, y, this.r)
             }
         }
         for (let d of this.debug) {
@@ -121,11 +124,17 @@ class SugarScape {
      * @param {SugarScape} sugarScape SugarScape Object
      */
     move() {
+        let count = 0;
         this.debug = [];
+        let nearestSpot = createVector(0, 0);
+        let prevAgents = this.agents;
+        let nextAgents = this.fillGridWithAgents(0);
+        console.log('start');
         for (let x = 0; x < this.cols; x++) {
             for (let y = 0; y < this.rows; y++) {
                 let agent = this.agents[x][y];
-                if (agent != null) {
+                console.log(agent);
+                if (agent !== null) {
                     //////////////////////////
                     //search the empty spots//
                     //////////////////////////
@@ -133,13 +142,12 @@ class SugarScape {
                     for (let i = -agent.v; i <= agent.v; i++) {
                         //wrap around with modulo
                         let posX = (i + x + this.cols) % this.cols;
-                        if (this.agents[posX][y] == null) emptySpots.push(createVector(posX, y));
+                        if (this.agents[posX][y] === null) emptySpots.push(createVector(posX, y));
                         let posY = (i + y + this.rows) % this.rows;
                         //we find the empty spots in the agent grid
-                        if (this.agents[x][posY] == null) emptySpots.push(createVector(x, posY));
+                        if (this.agents[x][posY] === null) emptySpots.push(createVector(x, posY));
                     }
 
-                    // console.log(emptySpots.length);
                     //////////////////////////////////////////////////////////
                     //search the sugarfields with the highest amout of sugar//
                     //////////////////////////////////////////////////////////
@@ -149,19 +157,16 @@ class SugarScape {
                         let sugarAmount = this.sugarFields[spot.x][spot.y].sugarAmount;
                         if (sugarAmount >= max) {
                             max = sugarAmount;
-                            // sugarSpots.push(createVector(spot.x, spot.y));
                         }
                     }
                     for (let spot of emptySpots) {
                         let sugarAmount = this.sugarFields[spot.x][spot.y].sugarAmount;
                         if (sugarAmount >= max) sugarSpots.push(spot);
                     }
-
                     //////////////////////////////////
                     //search the nearest sugar field//
                     //////////////////////////////////
                     let min = 9999999;
-                    let nearestSpot;
                     let nearestSpots = [];// Array of near positions
                     for (let spot of sugarSpots) {
                         let pos = createVector(x, y);
@@ -182,41 +187,55 @@ class SugarScape {
                             nearestSpots.push(spot);
                         }
                     }
-                    // console.log(nearestSpots);
                     //if there is more than one position get a random position
                     if (nearestSpots.length > 0) {
-                        nearestSpot = random(nearestSpots);
-                        // console.log(nearestSpot);
+                        let randomIndex = Math.floor(Math.random() * nearestSpots.length);
+                        nearestSpot = nearestSpots[randomIndex];
+                        this.debug.push(new Debug(createVector(x * this.r + (this.r / 4),
+                            y * this.r + (this.r / 4)),
+                            createVector(nearestSpot.x * this.r + (this.r / 4),
+                                nearestSpot.y * this.r + (this.r / 4))));
                     }
                     else {
-                        agent.update();
+                        agent.update(0);
+                        console.log('return');
                         return;
                     }
                     /////////////////////////////////////////////////////////////////////////
                     //change the position of the agent to spot with the big amount of sugar//
                     /////////////////////////////////////////////////////////////////////////
-                    this.debug.push(new Debug(createVector(leftGutter + x * this.r + (this.r / 4),
-                        topGutter + y * this.r + (this.r / 4)),
-                        createVector(leftGutter + nearestSpot.x * this.r + (this.r / 4),
-                            topGutter + nearestSpot.y * this.r + (this.r / 4))));
-
-                    this.agents[nearestSpot.x][nearestSpot.y] = new Agent(agent.v, agent.MR, agent.MA);
-                    this.agents[nearestSpot.x][nearestSpot.y].age = agent.age;
-                    this.agents[x].splice(y, 1, null);
-                    this.agents[nearestSpot.x][nearestSpot.y].update(this.sugarFields[nearestSpot.x][nearestSpot.y].sugarAmount);
-                    // agent.wealth += this.sugarFields[nearestSpot.x][nearestSpot.y].sugarAmount;
+                    // let xx = Math.floor(Math.random() * this.cols);
+                    // nearestSpot = createVector(xx, y);
+                    //save the agent in aseparsate variable
+                    nextAgents[nearestSpot.x][nearestSpot.y] = agent;
+                    nextAgents[nearestSpot.x][nearestSpot.y].update();
                     this.sugarFields[nearestSpot.x][nearestSpot.y].sugarAmount = 0;
-
+                    console.log(this.agents);
+                    console.log(nearestSpot);
+                    //remove this agent
+                    this.agents[x].splice(y, 1, null);
+                    count++;
+                    console.log(count);
                 }
             }
         }
+
+        // this.agents[nearestSpot.x][nearestSpot.y] = prevAgent;
+        // console.log(this.agents[nearestSpot.x][nearestSpot.y]);
+        // // this.agents[nearestSpot.x][nearestSpot.y].age = agent.age;
+
+        // this.agents[nearestSpot.x][nearestSpot.y].update(this.sugarFields[nearestSpot.x][nearestSpot.y].sugarAmount);
+        // // // agent.wealth += this.sugarFields[nearestSpot.x][nearestSpot.y].sugarAmount;
+        // this.sugarFields[nearestSpot.x][nearestSpot.y].sugarAmount = 0;
+        this.agents = nextAgents;
+        console.log('end');
     }
 
     replace() {
         for (let x = 0; x < this.cols; x++) {
             for (let y = 0; y < this.rows; y++) {
                 let agent = this.agents[x][y]
-                if (agent != null && (agent.wealth < 1 || agent.age > agent.MA)) {
+                if (agent !== null && (agent.wealth < 1 || agent.age > agent.MA)) {
                     this.agents[x].splice(y, 1, null);
                     this.addAgent();
                 }
@@ -233,9 +252,9 @@ class SugarScape {
                 if (this.agents[x][y] === null) emptySpots.push(createVector(x, y));
             }
         }
-        // console.log(emptySpots);
+        console.log(emptySpots);
         let spot = random(emptySpots);
-        this.agents[spot.x][spot.y] = new Agent(spot.x, spot.y);
+        this.agents[spot.x][spot.y] = new Agent();
     }
     /**
      * sets the resolution of the grid to a specific value
